@@ -15,6 +15,8 @@ namespace HCI_Project_2
 
             s = Console.ReadLine();
 
+            Console.ForegroundColor = ConsoleColor.Green;
+
             // Main Loop
             while (s != "q" && s != "quit")
             {
@@ -44,9 +46,11 @@ namespace HCI_Project_2
 
                 Console.WriteLine($"Result of Compute = {ans}");
 
+                Console.ForegroundColor = ConsoleColor.White;
 
                 Console.WriteLine("Enter an Integer: (or q to exit)");
                 s = Console.ReadLine();
+                Console.ForegroundColor = ConsoleColor.Green;
             }
         }
 
