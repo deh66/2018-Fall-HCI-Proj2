@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Daniel Hollo
+// deh66@zips.uakron.edu
+// Human Computer Interaction (HCI) Assignment 2
+// 2/27/2018
+
+using System;
 using System.Threading;
 
 namespace HCI_Project_2
