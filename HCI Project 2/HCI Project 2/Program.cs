@@ -1,66 +1,155 @@
 ﻿using System;
+using System.Threading;
 
 namespace HCI_Project_2
 {
     class Program
     {
+        public static double pi = 3.14159265358979323846264338;
+        public static bool StopComp = false;
+        public static bool StopProgram = false;
+
         static void Main(string[] args)
         {
-            String s;
-            int a;
+            Input input = new Input();
+            Thread thread = new Thread(input.IOinput);
+            thread.Start();
+           
+        }
 
-            double pi = 3.14159265358979323846264338;
+        // Compute Function
+        static public void Compute(object a)
+        {
+            double result = pi;
+            int i = 0;
+            bool Done = false;
 
-            Console.WriteLine("Enter how many iterations you want executed (integer): (or q to quit)");
+            Output CompO = new Output();
 
-            s = Console.ReadLine();
-
-            Console.ForegroundColor = ConsoleColor.Green;
-
-            // Main Loop
-            while (s != "q" && s != "quit")
+            while (!StopComp && !Done)
             {
-                // Initilize Loop Variables
-                int count = 0;
-                double ans = pi;
+                CompO.OnOutput(i.ToString());
 
+                if (i < (int)a)
+                    result = Math.Sqrt(result);
+                else
+                    Done = true;
 
-                // Parse input to first integer
-                while (!Int32.TryParse(s, out a))
-                {
-                    Console.WriteLine("Invalid Input: Only enter an Integer Value: ");
-                    s = Console.ReadLine();
-                }
+                i++;
+            }
 
+            StopComp = false;
+            CompO.OnOutput("Computation Complete: ");
+            CompO.OnOutput(result.ToString());
+            CompO.OnOutput("Enter New Integer (or 'q' to quit): ");
 
-                // Loop until requested iterations reached
-                while (count < a)
-                {
-                    // Call Compute Function
-                    ans = Compute(ans);
-                    // Increment counter
-                    count++;
-                    // Output iteration
-                    Console.WriteLine($"Iteration: {count}");
-                }
+        }
 
-                Console.WriteLine($"Result of Compute = {ans}");
+        // IO Event Delegate
+        public delegate void IOeventEventHandler(object sender, IOEventArgs e);
+        // IO Event Class
+        public class IOEventArgs : EventArgs
+        {
+            private string Throughput = "";
 
-                Console.ForegroundColor = ConsoleColor.White;
+            public IOEventArgs(string text)
+            {
+                this.Throughput = text;
+            }
 
-                Console.WriteLine("Enter an Integer: (or q to exit)");
-                s = Console.ReadLine();
-                Console.ForegroundColor = ConsoleColor.Green;
+            public string IOstring
+            {
+                get { return Throughput; }
+                set { this.Throughput = value; }
             }
         }
 
-        static private double Compute(double a)
+        // IO Class
+        public class Input
         {
-            double result = 0;
-            // Computes Square Root
-            result = Math.Sqrt(a);
+            // Public Function to take user input
+            public void IOinput()
+            {
+                string i = "";
+                int n = 0;
+                bool breakout = false;
 
-            return result;
+
+                Output InpO = new Output();
+
+                while (!breakout)
+                {
+
+                    InpO.OnOutput("Input an integer: ");
+
+                    i = "";
+                    i = Console.ReadLine();
+                    //Console.WriteLine($"[THREAD] i = {i}");
+
+                    if (i == "q")
+                    {
+                        breakout = true;
+                        StopComp = true;
+                        StopProgram = true;
+                    }
+                    else if(i == "s")
+                    {
+                        StopComp = true;
+                    }
+                    else if (i != "")
+                    {
+                        //IOEventArgs e = new IOEventArgs(i);
+                        //OnInput(e);
+
+                        if(Int32.TryParse(i, out n))
+                        {
+                            Thread th = new Thread(Compute);
+                            th.Start(n);
+                        }
+                        else
+                        {
+                            InpO.OnOutput("Invalid Input, Please Enter a Number: ");
+                        }
+                    }
+                }
+            }
+
+            // Create Instance of IOevent handler object
+            public event IOeventEventHandler In;
+
+            // Input Event Handler
+            protected virtual void OnInput(IOEventArgs e)
+            {
+                if (In != null)
+                {
+                    In(this, e);
+                }
+
+                if (e.IOstring == "s")
+                {
+                    StopComp = true;
+                }
+            }
+        }
+
+        // Output Class
+        public class Output
+        {
+            // Create Instance of IOevent handler object
+            public event IOeventEventHandler Out;
+
+            public virtual void OnOutput(IOEventArgs e)
+            {
+                if (Out != null)
+                {
+                    Out(this, e);
+                }
+                Console.WriteLine(e.IOstring);
+            }
+            public virtual void OnOutput(string s)
+            {
+                Console.WriteLine(s);
+            }
         }
 
     }
