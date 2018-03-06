@@ -19,7 +19,6 @@ namespace HCI_Project_2
             Input input = new Input();
             Thread thread = new Thread(input.IOinput);
             thread.Start();
-           
         }
 
         // Compute Function
@@ -47,9 +46,11 @@ namespace HCI_Project_2
             CompO.OnOutput("Computation Complete: ");
             CompO.OnOutput(result.ToString());
             CompO.OnOutput("Enter New Integer (or 'q' to quit): ");
-
         }
 
+        /// <summary>
+        /// Event Code
+        /// </summary>
         // IO Event Delegate
         public delegate void IOeventEventHandler(object sender, IOEventArgs e);
         // IO Event Class
@@ -69,6 +70,9 @@ namespace HCI_Project_2
             }
         }
 
+        /// <summary>
+        /// Input and Output Functions and Class
+        /// </summary>
         // IO Class
         public class Input
         {
